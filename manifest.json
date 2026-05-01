@@ -1,0 +1,27 @@
+{
+  "manifest_version": 3,
+  "name": "Cyber Pet",
+  "version": "1.0.0",
+  "description": "Catch cyber pets while browsing the web.",
+  "permissions": ["storage", "windows"],
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "css": ["content.css"],
+      "run_at": "document_idle"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "assets/pets/*.svg",
+        "assets/habitats/*.svg"
+      ],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}

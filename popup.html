@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cyber Pet</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="header">
+    <div class="header-left">
+      <h1 class="logo">CYBER PET</h1>
+      <p class="subtitle" id="subtitle">도감을 불러오는 중...</p>
+    </div>
+    <button class="open-dex-btn" id="open-dex-btn">도감 열기</button>
+  </header>
+
+  <main>
+    <section id="empty-state" class="empty-state hidden">
+      <div class="empty-icon">◎</div>
+      <p>아직 포획한 펫이 없어요.</p>
+      <p class="hint">웹 서핑 중 나타나는 서식지를 클릭해 보세요!</p>
+    </section>
+
+    <section id="dex-grid" class="dex-grid"></section>
+  </main>
+
+  <script src="popup.js"></script>
+</body>
+</html>
