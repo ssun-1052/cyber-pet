@@ -1,5 +1,7 @@
 /* Cyber Pet — content overlay styles */
 
+/* ── Habitat ─────────────────────────────────────────────────────────────── */
+
 #cyber-pet-habitat {
   position: fixed;
   width: 120px;
@@ -24,26 +26,23 @@
   filter: drop-shadow(0 0 8px rgba(120, 200, 255, 0.8));
 }
 
-/* 포획 직후: 이미지 교체 시 플래시 */
 #cyber-pet-habitat.catching {
   cursor: default;
   animation: cyberPetCatch 0.2s ease forwards;
 }
 
-/* 펫으로 교체된 후 튀어오르는 연출 */
 #cyber-pet-habitat.caught {
   cursor: default;
   animation: cyberPetBounce 1s ease forwards;
   filter: drop-shadow(0 0 14px rgba(120, 200, 255, 0.9));
 }
 
-/* 마지막으로 위로 날아가며 사라짐 */
 #cyber-pet-habitat.releasing {
   cursor: default;
   animation: cyberPetRelease 0.5s ease forwards;
 }
 
-/* ── Toast ── */
+/* ── Toast ───────────────────────────────────────────────────────────────── */
 
 #cyber-pet-toast {
   position: fixed;
@@ -67,7 +66,113 @@
   pointer-events: none;
 }
 
-/* ── Keyframes ── */
+/* ── House ───────────────────────────────────────────────────────────────── */
+
+#cyber-pet-house {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  width: 200px;
+  height: 150px;
+  background: rgba(8, 8, 18, 0.9);
+  border: 1px solid rgba(120, 200, 255, 0.2);
+  border-radius: 12px;
+  z-index: 2147483646;
+  overflow: hidden;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.55);
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+#cyber-pet-house-header {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 8px 0 10px;
+  background: rgba(120, 200, 255, 0.06);
+  border-bottom: 1px solid rgba(120, 200, 255, 0.1);
+}
+
+#cyber-pet-house-title {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  color: rgba(120, 200, 255, 0.55);
+  text-transform: uppercase;
+}
+
+#cyber-pet-house-close {
+  background: none;
+  border: none;
+  color: rgba(224, 240, 255, 0.3);
+  font-size: 15px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 2px;
+  font-family: inherit;
+  transition: color 0.15s;
+}
+
+#cyber-pet-house-close:hover {
+  color: rgba(224, 240, 255, 0.8);
+}
+
+#cyber-pet-house-arena {
+  position: absolute;
+  top: 24px; left: 0; right: 0; bottom: 0;
+}
+
+#cyber-pet-house-hint {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 10px;
+  color: rgba(224, 240, 255, 0.2);
+  pointer-events: none;
+  margin: 0;
+}
+
+/* ── House pets ──────────────────────────────────────────────────────────── */
+
+.house-pet {
+  position: absolute;
+  width: 36px;
+  height: 36px;
+  cursor: pointer;
+}
+
+.house-pet img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  pointer-events: none;
+}
+
+.house-pet.jumping {
+  animation: housePetJump 0.5s cubic-bezier(0.33, 1, 0.68, 1) forwards;
+}
+
+.house-pet-heart {
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  font-size: 13px;
+  line-height: 1;
+  pointer-events: none;
+  animation: houseHeartFloat 0.65s ease forwards;
+}
+
+/* ── Keyframes ───────────────────────────────────────────────────────────── */
 
 @keyframes cyberPetFadeIn {
   from { opacity: 0; transform: scale(0.7); }
@@ -79,28 +184,25 @@
   to   { opacity: 0; transform: scale(0.7); }
 }
 
-/* 클릭 순간: 빠르게 수축 후 복귀 (이미지 교체 타이밍과 맞춤) */
 @keyframes cyberPetCatch {
-  0%   { transform: scale(1);    filter: brightness(1);   }
-  40%  { transform: scale(0.6);  filter: brightness(3);   }
-  100% { transform: scale(1);    filter: brightness(1);   }
+  0%   { transform: scale(1);   filter: brightness(1); }
+  40%  { transform: scale(0.6); filter: brightness(3); }
+  100% { transform: scale(1);   filter: brightness(1); }
 }
 
-/* 펫 등장: 자연스러운 2회 바운스 */
 @keyframes cyberPetBounce {
-  0%   { transform: translateY(0)     scale(1);    }
-  22%  { transform: translateY(-28px) scale(1.06); }
-  40%  { transform: translateY(0)     scale(0.95); }
-  58%  { transform: translateY(-14px) scale(1.03); }
-  74%  { transform: translateY(0)     scale(0.98); }
-  100% { transform: translateY(0)     scale(1);    }
+  0%   { transform: translateY(0);     }
+  22%  { transform: translateY(-28px); }
+  40%  { transform: translateY(0);     }
+  58%  { transform: translateY(-14px); }
+  74%  { transform: translateY(0);     }
+  100% { transform: translateY(0);     }
 }
 
-/* 포획 완료 후 위로 날아가며 사라짐 */
 @keyframes cyberPetRelease {
   0%   { opacity: 1; transform: scale(1)    translateY(0);    }
-  60%  { opacity: 1; transform: scale(1.05) translateY(-24px);  }
-  100% { opacity: 0; transform: scale(0.7)  translateY(-50px);  }
+  60%  { opacity: 1; transform: scale(1.05) translateY(-24px); }
+  100% { opacity: 0; transform: scale(0.7)  translateY(-50px); }
 }
 
 @keyframes cyberPetToastIn {
@@ -111,4 +213,18 @@
 @keyframes cyberPetToastOut {
   from { opacity: 1; transform: translateX(-50%) translateY(0);    }
   to   { opacity: 0; transform: translateX(-50%) translateY(10px); }
+}
+
+@keyframes housePetJump {
+  0%   { transform: translateY(0);     }
+  35%  { transform: translateY(-16px); }
+  65%  { transform: translateY(0);     }
+  82%  { transform: translateY(-5px);  }
+  100% { transform: translateY(0);     }
+}
+
+@keyframes houseHeartFloat {
+  0%   { opacity: 1; transform: translateX(-50%) translateY(0)    scale(1);   }
+  50%  { opacity: 1; transform: translateX(-50%) translateY(-10px) scale(1.2); }
+  100% { opacity: 0; transform: translateX(-50%) translateY(-22px) scale(0.8); }
 }

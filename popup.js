@@ -2,86 +2,94 @@
   'use strict';
 
   const PET_DISPLAY_NAMES = {
-    RABBIT: 'Rabbit',
+    RABBIT:   'Rabbit',
     squirrel: 'Squirrel',
-    UNICORN: 'Unicorn',
+    UNICORN:  'Unicorn',
   };
 
-  function getURL(path) {
-    return chrome.runtime.getURL(path);
+  function getURL(path) { return chrome.runtime.getURL(path); }
+
+  function getUniquePets(pets) {
+    const seen = new Set();
+    return pets.filter(p => seen.has(p.name) ? false : (seen.add(p.name), true));
   }
 
+  // ── Dex render ──────────────────────────────────────────────────────────────
+
   function render(pets) {
-    const grid = document.getElementById('dex-grid');
-    const empty = document.getElementById('empty-state');
+    const grid     = document.getElementById('dex-grid');
+    const empty    = document.getElementById('empty-state');
     const subtitle = document.getElementById('subtitle');
 
     grid.innerHTML = '';
+    const unique = getUniquePets(pets);
 
-    if (pets.length === 0) {
+    if (unique.length === 0) {
       empty.classList.remove('hidden');
       subtitle.textContent = '포획한 펫 0마리';
       return;
     }
 
     empty.classList.add('hidden');
-    subtitle.textContent = `포획한 펫 ${pets.length}마리`;
+    subtitle.textContent = `포획한 펫 ${unique.length}마리`;
 
-    // Group by pet name and count
-    const counts = {};
-    const firstSeen = {};
-    for (const pet of pets) {
-      counts[pet.name] = (counts[pet.name] || 0) + 1;
-      if (!firstSeen[pet.name]) firstSeen[pet.name] = pet;
-    }
-
-    // Sort by most caught
-    const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
-
-    for (const [name, count] of sorted) {
+    for (const pet of unique) {
       const card = document.createElement('div');
       card.className = 'dex-card';
-      card.title = `${PET_DISPLAY_NAMES[name] ?? name} × ${count}`;
 
       const img = document.createElement('img');
       img.className = 'dex-card-image';
-      img.src = getURL(`assets/pets/${firstSeen[name].file}`);
-      img.alt = name;
+      img.src = getURL(`assets/pets/${pet.file}`);
+      img.alt = pet.name;
 
       const label = document.createElement('span');
       label.className = 'dex-card-name';
-      label.textContent = PET_DISPLAY_NAMES[name] ?? name;
-
-      const badge = document.createElement('span');
-      badge.className = 'dex-card-count';
-      badge.textContent = `×${count}`;
+      label.textContent = PET_DISPLAY_NAMES[pet.name] ?? pet.name;
 
       card.appendChild(img);
       card.appendChild(label);
-      card.appendChild(badge);
       grid.appendChild(card);
     }
   }
 
-  // 도감 열기 버튼
+  // ── Dex window ──────────────────────────────────────────────────────────────
+
   document.getElementById('open-dex-btn').addEventListener('click', () => {
     chrome.windows.create({
-      url: chrome.runtime.getURL('dex.html'),
-      type: 'popup',
-      width: 640,
+      url:    chrome.runtime.getURL('dex.html'),
+      type:   'popup',
+      width:  640,
       height: 520,
     });
   });
 
-  // Load pets from storage on open
-  chrome.storage.local.get({ pets: [] }, (data) => {
-    render(data.pets);
+  // ── House toggle ─────────────────────────────────────────────────────────────
+
+  const houseBtn = document.getElementById('toggle-house-btn');
+
+  function setHouseBtn(visible) {
+    houseBtn.textContent = visible ? '하우스 닫기' : '사이버 하우스';
+    houseBtn.classList.toggle('active', visible);
+  }
+
+  houseBtn.addEventListener('click', () => {
+    chrome.storage.local.get({ houseVisible: false }, ({ houseVisible }) => {
+      const next = !houseVisible;
+      chrome.storage.local.set({ houseVisible: next });
+      setHouseBtn(next);
+    });
   });
 
-  // Live-update if storage changes while popup is open
+  // ── Init ────────────────────────────────────────────────────────────────────
+
+  chrome.storage.local.get({ pets: [], houseVisible: false }, ({ pets, houseVisible }) => {
+    render(pets);
+    setHouseBtn(houseVisible);
+  });
+
   chrome.storage.onChanged.addListener((changes, area) => {
-    if (area === 'local' && changes.pets) {
-      render(changes.pets.newValue ?? []);
-    }
+    if (area !== 'local') return;
+    if (changes.pets)         render(changes.pets.newValue ?? []);
+    if (changes.houseVisible) setHouseBtn(changes.houseVisible.newValue ?? false);
   });
 })();
