@@ -3,8 +3,8 @@
 
   // ── Constants ───────────────────────────────────────────────────────────────
 
-  const PETS     = ['RABBIT', 'squirrel', 'UNICORN'];
-  const HABITATS = ['habitat1', 'habitat2'];
+  const PETS     = ['rabbit', 'squirrel', 'UNICORN', 'Dolphin', 'Donkey', 'capybara', 'crocodile', 'dog'];
+  const HABITATS = ['habitat1', 'habitat2', 'habitat3'];
   const HABITAT_LIFETIME_MS = 2000;
   const SPAWN_INTERVAL_MS   = 5000;
   const HABITAT_SIZE = 120;

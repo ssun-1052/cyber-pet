@@ -2,9 +2,14 @@
   'use strict';
 
   const PET_DISPLAY_NAMES = {
-    RABBIT: 'Rabbit',
-    squirrel: 'Squirrel',
-    UNICORN: 'Unicorn',
+    rabbit:    'Rabbit',
+    squirrel:  'Squirrel',
+    UNICORN:   'Unicorn',
+    Dolphin:   'Dolphin',
+    Donkey:    'Donkey',
+    capybara:  'Capybara',
+    crocodile: 'Crocodile',
+    dog:       'Dog',
   };
 
   function getURL(path) {
