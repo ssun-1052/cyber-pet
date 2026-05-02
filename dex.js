@@ -11,20 +11,17 @@
     dog:       'Dog',
   };
 
-  function getURL(path) {
-    return chrome.runtime.getURL(path);
-  }
+  const EVOLVE_COUNT = 5;
+
+  function getURL(path) { return chrome.runtime.getURL(path); }
 
   function formatDate(ts) {
-    return new Date(ts).toLocaleDateString('ko-KR', {
-      month: 'short',
-      day: 'numeric',
-    });
+    return new Date(ts).toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' });
   }
 
   function render(pets) {
-    const grid = document.getElementById('dex-grid');
-    const empty = document.getElementById('empty-state');
+    const grid     = document.getElementById('dex-grid');
+    const empty    = document.getElementById('empty-state');
     const subtitle = document.getElementById('subtitle');
 
     grid.innerHTML = '';
@@ -38,62 +35,56 @@
     empty.classList.add('hidden');
     subtitle.textContent = `포획한 펫 총 ${pets.length}마리`;
 
-    // Group by name
-    const counts = {};
-    const firstSeen = {};
-    const lastSeen = {};
     for (const pet of pets) {
-      counts[pet.name] = (counts[pet.name] || 0) + 1;
-      if (!firstSeen[pet.name] || pet.caughtAt < firstSeen[pet.name].caughtAt) {
-        firstSeen[pet.name] = pet;
-      }
-      if (!lastSeen[pet.name] || pet.caughtAt > lastSeen[pet.name].caughtAt) {
-        lastSeen[pet.name] = pet;
-      }
-    }
-
-    const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
-
-    for (const [name, count] of sorted) {
       const card = document.createElement('div');
-      card.className = 'dex-card';
+      card.className = 'dex-card' + (pet.evolved ? ' evolved' : '');
 
       const img = document.createElement('img');
       img.className = 'dex-card-image';
-      img.src = getURL(`assets/pets/${firstSeen[name].file}`);
-      img.alt = name;
+      img.src = getURL(`assets/pets/${pet.file}`);
+      img.alt = pet.name;
 
       const info = document.createElement('div');
       info.className = 'dex-card-info';
 
       const label = document.createElement('span');
       label.className = 'dex-card-name';
-      label.textContent = PET_DISPLAY_NAMES[name] ?? name;
+      label.textContent = PET_DISPLAY_NAMES[pet.name] ?? pet.name;
 
       const meta = document.createElement('span');
       meta.className = 'dex-card-meta';
-      meta.textContent = `마지막 포획 ${formatDate(lastSeen[name].caughtAt)}`;
+      meta.textContent = `첫 포획 ${formatDate(pet.firstCaughtAt ?? Date.now())}`;
 
-      const badge = document.createElement('span');
-      badge.className = 'dex-card-count';
-      badge.textContent = `×${count}`;
+      // 진행도
+      const progress = document.createElement('div');
+      progress.className = 'dex-card-progress';
+
+      if (pet.evolved) {
+        const badge = document.createElement('span');
+        badge.className = 'dex-evolved-badge';
+        badge.textContent = '✦ 진화 완료';
+        progress.appendChild(badge);
+      } else {
+        const count = pet.count ?? 1;
+        for (let i = 0; i < EVOLVE_COUNT; i++) {
+          const dot = document.createElement('span');
+          dot.className = 'progress-dot' + (i < count ? ' filled' : '');
+          progress.appendChild(dot);
+        }
+      }
 
       info.appendChild(label);
       info.appendChild(meta);
+      info.appendChild(progress);
       card.appendChild(img);
       card.appendChild(info);
-      card.appendChild(badge);
       grid.appendChild(card);
     }
   }
 
-  chrome.storage.local.get({ pets: [] }, (data) => {
-    render(data.pets);
-  });
+  chrome.storage.local.get({ pets: [] }, ({ pets }) => render(pets));
 
   chrome.storage.onChanged.addListener((changes, area) => {
-    if (area === 'local' && changes.pets) {
-      render(changes.pets.newValue ?? []);
-    }
+    if (area === 'local' && changes.pets) render(changes.pets.newValue ?? []);
   });
 })();

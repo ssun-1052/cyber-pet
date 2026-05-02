@@ -222,3 +222,60 @@
   50%  { opacity: 1; transform: translateX(-50%) translateY(-10px) scale(1.2); }
   100% { opacity: 0; transform: translateX(-50%) translateY(-22px) scale(0.8); }
 }
+
+/* ── Evolution effect ────────────────────────────────────────────────────── */
+
+.house-pet.evolving {
+  animation: houseEvolve 1.6s ease forwards;
+  z-index: 10;
+}
+
+.house-pet-spark {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #f5c842;
+  pointer-events: none;
+  transform-origin: 0 0;
+  animation: sparkFly 0.8s ease-out forwards;
+  animation-delay: calc(var(--angle) / 360deg * 0.15s);
+  offset-rotate: var(--angle);
+}
+
+.house-pet-levelup {
+  position: absolute;
+  top: -28px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  color: #f5c842;
+  white-space: nowrap;
+  pointer-events: none;
+  text-shadow: 0 1px 6px rgba(245, 200, 66, 0.6);
+  animation: levelUpFloat 1.4s ease forwards;
+}
+
+@keyframes houseEvolve {
+  0%   { filter: brightness(1)   saturate(1);   transform: scale(1);    }
+  20%  { filter: brightness(2.5) saturate(0.2); transform: scale(0.85); }
+  40%  { filter: brightness(1.5) saturate(1.5); transform: scale(1.15); }
+  60%  { filter: brightness(1);  saturate(1);   transform: scale(1);    }
+  100% { filter: brightness(1);  saturate(1);   transform: scale(1);    }
+}
+
+@keyframes sparkFly {
+  0%   { opacity: 1; transform: translate(-50%, -50%) rotate(var(--angle)) translateX(0)    scale(1);   }
+  100% { opacity: 0; transform: translate(-50%, -50%) rotate(var(--angle)) translateX(38px) scale(0.3); }
+}
+
+@keyframes levelUpFloat {
+  0%   { opacity: 0; transform: translateX(-50%) translateY(4px)   scale(0.8); }
+  15%  { opacity: 1; transform: translateX(-50%) translateY(0)      scale(1.1); }
+  70%  { opacity: 1; transform: translateX(-50%) translateY(-10px)  scale(1);   }
+  100% { opacity: 0; transform: translateX(-50%) translateY(-20px)  scale(0.9); }
+}

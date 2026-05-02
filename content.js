@@ -9,12 +9,13 @@
   const SPAWN_INTERVAL_MS   = 5000;
   const HABITAT_SIZE = 120;
   const MARGIN = 20;
+  const EVOLVE_COUNT = 5;
 
   const HOUSE_W        = 300;
   const HOUSE_H        = 250;
   const HOUSE_HEADER_H = 28;
   const PET_SIZE       = 81;
-  const BASE_SPEED     = 0.038; // px per ms
+  const BASE_SPEED     = 0.038;
 
   // ── Shared state ────────────────────────────────────────────────────────────
 
@@ -22,10 +23,10 @@
   let disappearTimer = null;
   let spawnInterval  = null;
 
-  let houseEl        = null;
-  let housePets      = [];   // { name, file, el, img, x, y, vx, vy }
-  let houseRafId     = null;
-  let houseLastTime  = null;
+  let houseEl       = null;
+  let housePets     = [];   // { name, el, img, x, y, vx, vy }
+  let houseRafId    = null;
+  let houseLastTime = null;
 
   // ── Utilities ───────────────────────────────────────────────────────────────
 
@@ -46,9 +47,9 @@
     };
   }
 
-  function getUniquePets(pets) {
-    const seen = new Set();
-    return pets.filter(p => seen.has(p.name) ? false : (seen.add(p.name), true));
+  // pets 배열은 이미 name 기준 unique (1종 1항목)
+  function petFile(pet) {
+    return pet.evolved ? `${pet.name}_v2.svg` : `${pet.name}.svg`;
   }
 
   // ── Habitat / spawn ─────────────────────────────────────────────────────────
@@ -92,7 +93,7 @@
 
     const img = el.querySelector('img');
 
-    // 1. Flash + image swap at peak of squish
+    // 1. Flash + image swap
     el.classList.add('catching');
     setTimeout(() => {
       if (!isContextAlive()) return;
@@ -116,18 +117,44 @@
     if (!isContextAlive()) return;
 
     chrome.storage.local.get({ pets: [] }, (data) => {
-      if (data.pets.some(p => p.name === petName)) {
-        showToast(`이미 포획한 펫이에요!`);
+      const existing = data.pets.find(p => p.name === petName);
+
+      // 이미 진화 완료
+      if (existing?.evolved) {
+        showToast(`✨ ${petName}은(는) 이미 진화 완료!`);
         return;
       }
-      const entry = {
-        id:       Date.now() + '-' + Math.random().toString(36).slice(2, 7),
-        name:     petName,
-        file:     `${petName}.svg`,
-        caughtAt: Date.now(),
-      };
-      chrome.storage.local.set({ pets: [entry, ...data.pets] });
-      showToast(`포획 성공! ${petName} 을(를) 잡았습니다 ✦`);
+
+      let updatedPets;
+
+      if (!existing) {
+        // 첫 포획
+        updatedPets = [...data.pets, {
+          name:          petName,
+          file:          `${petName}.svg`,
+          count:         1,
+          evolved:       false,
+          firstCaughtAt: Date.now(),
+        }];
+        showToast(`포획 성공! ${petName} 을(를) 잡았습니다 ✦`);
+      } else {
+        const newCount  = existing.count + 1;
+        const willEvolve = newCount >= EVOLVE_COUNT;
+        updatedPets = data.pets.map(p => p.name === petName ? {
+          ...p,
+          count:   newCount,
+          evolved: willEvolve,
+          file:    willEvolve ? `${petName}_v2.svg` : p.file,
+        } : p);
+
+        if (willEvolve) {
+          showToast(`✨ ${petName} 진화 완료! Level Up!`);
+        } else {
+          showToast(`${petName} ${newCount}번째 포획! (${newCount}/${EVOLVE_COUNT})`);
+        }
+      }
+
+      chrome.storage.local.set({ pets: updatedPets });
     });
   }
 
@@ -147,13 +174,12 @@
 
   // ── House ───────────────────────────────────────────────────────────────────
 
-  function createHouse(uniquePets) {
+  function createHouse(pets) {
     if (houseEl) return;
 
     houseEl = document.createElement('div');
     houseEl.id = 'cyber-pet-house';
 
-    // Header bar (drag handle)
     const header = document.createElement('div');
     header.id = 'cyber-pet-house-header';
 
@@ -173,23 +199,18 @@
     header.appendChild(closeBtn);
     houseEl.appendChild(header);
 
-    // Arena
     const arena = document.createElement('div');
     arena.id = 'cyber-pet-house-arena';
     houseEl.appendChild(arena);
 
-    // Empty hint
     const hint = document.createElement('p');
     hint.id = 'cyber-pet-house-hint';
     hint.textContent = '펫을 포획해보세요';
     arena.appendChild(hint);
 
-    // Background image
     houseEl.style.backgroundImage = `url(${getURL('assets/background/bg-1.svg')})`;
-
     document.documentElement.appendChild(houseEl);
 
-    // Restore saved position, then apply drag
     chrome.storage.local.get({ houseX: 20, houseY: 20 }, ({ houseX, houseY }) => {
       houseEl.style.left = houseX + 'px';
       houseEl.style.top  = houseY + 'px';
@@ -197,50 +218,8 @@
     applyDrag(houseEl, header);
 
     housePets = [];
-    addPetsToHouse(uniquePets);
+    addPetsToHouse(pets);
     startHouseAnimation();
-  }
-
-  function applyDrag(el, handle) {
-    let startX, startY, startLeft, startTop;
-
-    handle.addEventListener('mousedown', (e) => {
-      // Ignore clicks on the close button
-      if (e.target.id === 'cyber-pet-house-close') return;
-
-      e.preventDefault();
-      startX    = e.clientX;
-      startY    = e.clientY;
-      startLeft = parseInt(el.style.left, 10) || 20;
-      startTop  = parseInt(el.style.top,  10) || 20;
-
-      el.style.transition = 'none';
-
-      function onMove(e) {
-        const dx = e.clientX - startX;
-        const dy = e.clientY - startY;
-
-        const newLeft = Math.max(0, Math.min(window.innerWidth  - HOUSE_W, startLeft + dx));
-        const newTop  = Math.max(0, Math.min(window.innerHeight - HOUSE_H, startTop  + dy));
-
-        el.style.left = newLeft + 'px';
-        el.style.top  = newTop  + 'px';
-      }
-
-      function onUp(e) {
-        document.removeEventListener('mousemove', onMove);
-        document.removeEventListener('mouseup',   onUp);
-
-        const finalLeft = parseInt(el.style.left, 10);
-        const finalTop  = parseInt(el.style.top,  10);
-        if (isContextAlive()) {
-          chrome.storage.local.set({ houseX: finalLeft, houseY: finalTop });
-        }
-      }
-
-      document.addEventListener('mousemove', onMove);
-      document.addEventListener('mouseup',   onUp);
-    });
   }
 
   function destroyHouse() {
@@ -250,35 +229,67 @@
     housePets = [];
   }
 
-  function addPetsToHouse(uniquePets) {
+  function applyDrag(el, handle) {
+    let startX, startY, startLeft, startTop;
+
+    handle.addEventListener('mousedown', (e) => {
+      if (e.target.id === 'cyber-pet-house-close') return;
+      e.preventDefault();
+      startX    = e.clientX;
+      startY    = e.clientY;
+      startLeft = parseInt(el.style.left, 10) || 20;
+      startTop  = parseInt(el.style.top,  10) || 20;
+      el.style.transition = 'none';
+
+      function onMove(e) {
+        const newLeft = Math.max(0, Math.min(window.innerWidth  - HOUSE_W, startLeft + e.clientX - startX));
+        const newTop  = Math.max(0, Math.min(window.innerHeight - HOUSE_H, startTop  + e.clientY - startY));
+        el.style.left = newLeft + 'px';
+        el.style.top  = newTop  + 'px';
+      }
+
+      function onUp() {
+        document.removeEventListener('mousemove', onMove);
+        document.removeEventListener('mouseup',   onUp);
+        if (isContextAlive()) {
+          chrome.storage.local.set({
+            houseX: parseInt(el.style.left, 10),
+            houseY: parseInt(el.style.top,  10),
+          });
+        }
+      }
+
+      document.addEventListener('mousemove', onMove);
+      document.addEventListener('mouseup',   onUp);
+    });
+  }
+
+  function addPetsToHouse(pets) {
     if (!houseEl) return;
     const arena = document.getElementById('cyber-pet-house-arena');
     if (!arena) return;
 
     const currentNames = new Set(housePets.map(p => p.name));
 
-    for (const pet of uniquePets) {
+    for (const pet of pets) {
       if (currentNames.has(pet.name)) continue;
 
-      // Remove empty hint
       document.getElementById('cyber-pet-house-hint')?.remove();
 
       const petEl = document.createElement('div');
       petEl.className = 'house-pet';
 
       const img = document.createElement('img');
-      img.src = getURL(`assets/pets/${pet.file}`);
+      img.src = getURL(`assets/pets/${petFile(pet)}`);
       img.alt = pet.name;
       petEl.appendChild(img);
       arena.appendChild(petEl);
 
       const arenaH = HOUSE_H - HOUSE_HEADER_H;
-      const maxX   = HOUSE_W - PET_SIZE - 4;
-      const maxY   = arenaH  - PET_SIZE - 4;
-      const x      = 4 + Math.random() * (maxX - 8);
-      const y      = 4 + Math.random() * (maxY - 8);
-      const angle  = Math.random() * Math.PI * 2;
-      const speed  = BASE_SPEED * (0.6 + Math.random() * 0.8);
+      const x = 4 + Math.random() * (HOUSE_W - PET_SIZE - 8);
+      const y = 4 + Math.random() * (arenaH  - PET_SIZE - 8);
+      const angle = Math.random() * Math.PI * 2;
+      const speed = BASE_SPEED * (0.6 + Math.random() * 0.8);
 
       petEl.style.left = x + 'px';
       petEl.style.top  = y + 'px';
@@ -288,6 +299,12 @@
       housePets.push({ name: pet.name, el: petEl, img, x, y, vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed });
       currentNames.add(pet.name);
     }
+  }
+
+  function updateHousePetImage(petName, newFile) {
+    const hp = housePets.find(p => p.name === petName);
+    if (!hp) return;
+    hp.img.src = getURL(`assets/pets/${newFile}`);
   }
 
   function startHouseAnimation() {
@@ -304,18 +321,16 @@
       houseLastTime = ts;
 
       for (const p of housePets) {
-        if (p.el.classList.contains('jumping')) continue;
+        if (p.el.classList.contains('jumping') || p.el.classList.contains('evolving')) continue;
 
         p.x += p.vx * dt;
         p.y += p.vy * dt;
 
-        // Bounce off walls with slight randomness so pets don't get stuck
         if (p.x <= minX) { p.x = minX; p.vx =  Math.abs(p.vx) * (0.85 + Math.random() * 0.3); }
         if (p.x >= maxX) { p.x = maxX; p.vx = -Math.abs(p.vx) * (0.85 + Math.random() * 0.3); }
         if (p.y <= minY) { p.y = minY; p.vy =  Math.abs(p.vy) * (0.85 + Math.random() * 0.3); }
         if (p.y >= maxY) { p.y = maxY; p.vy = -Math.abs(p.vy) * (0.85 + Math.random() * 0.3); }
 
-        // Flip sprite based on horizontal direction
         p.img.style.transform = p.vx < 0 ? 'scaleX(-1)' : '';
         p.el.style.left = p.x + 'px';
         p.el.style.top  = p.y + 'px';
@@ -331,7 +346,7 @@
   }
 
   function onHousePetClick(petEl) {
-    if (petEl.classList.contains('jumping')) return;
+    if (petEl.classList.contains('jumping') || petEl.classList.contains('evolving')) return;
     petEl.classList.add('jumping');
 
     const heart = document.createElement('span');
@@ -345,6 +360,35 @@
     }, 650);
   }
 
+  // ── Evolution effect ─────────────────────────────────────────────────────────
+
+  function triggerEvolutionEffect(petEl, newFile) {
+    petEl.classList.add('evolving');
+
+    // 이미지 교체
+    const img = petEl.querySelector('img');
+    if (img) img.src = getURL(`assets/pets/${newFile}`);
+
+    // 파티클 8개
+    for (let i = 0; i < 8; i++) {
+      const spark = document.createElement('span');
+      spark.className = 'house-pet-spark';
+      spark.style.setProperty('--angle', `${i * 45}deg`);
+      petEl.appendChild(spark);
+    }
+
+    // Level Up! 텍스트
+    const levelUp = document.createElement('span');
+    levelUp.className = 'house-pet-levelup';
+    levelUp.textContent = 'Level Up!';
+    petEl.appendChild(levelUp);
+
+    setTimeout(() => {
+      petEl.classList.remove('evolving');
+      petEl.querySelectorAll('.house-pet-spark, .house-pet-levelup').forEach(e => e.remove());
+    }, 1600);
+  }
+
   // ── Storage listeners ───────────────────────────────────────────────────────
 
   chrome.storage.onChanged.addListener((changes, area) => {
@@ -352,37 +396,76 @@
 
     if (changes.houseVisible) {
       if (changes.houseVisible.newValue) {
-        chrome.storage.local.get({ pets: [] }, ({ pets }) => createHouse(getUniquePets(pets)));
+        chrome.storage.local.get({ pets: [] }, ({ pets }) => createHouse(pets));
       } else {
         destroyHouse();
       }
     }
 
-    if (changes.pets && houseEl) {
-      addPetsToHouse(getUniquePets(changes.pets.newValue ?? []));
+    if (changes.pets) {
+      const newPets = changes.pets.newValue ?? [];
+      const oldPets = changes.pets.oldValue ?? [];
+
+      if (houseEl) {
+        // 새로 추가된 펫
+        addPetsToHouse(newPets);
+
+        // 진화 감지 → 연출 + 이미지 교체
+        for (const np of newPets) {
+          if (!np.evolved) continue;
+          const op = oldPets.find(p => p.name === np.name);
+          if (op && !op.evolved) {
+            const hp = housePets.find(p => p.name === np.name);
+            if (hp) triggerEvolutionEffect(hp.el, np.file);
+          }
+        }
+      }
     }
   });
 
   // ── Init ────────────────────────────────────────────────────────────────────
 
-  // Migrate legacy name casing and remove retired pets (UNICORN, RABBIT)
-  const RETIRED_PETS = new Set(['UNICORN', 'RABBIT']);
+  // 구버전 데이터 마이그레이션
+  const RETIRED_PETS = new Set(['UNICORN']);
   const NAME_ALIASES = { RABBIT: 'rabbit' };
 
   chrome.storage.local.get({ pets: [] }, ({ pets }) => {
-    const migrated = pets
-      .filter(p => !RETIRED_PETS.has(p.name) || NAME_ALIASES[p.name])
-      .map(p => NAME_ALIASES[p.name]
-        ? { ...p, name: NAME_ALIASES[p.name], file: `${NAME_ALIASES[p.name]}.svg` }
-        : p
-      );
+    // 구버전: { id, name, file, caughtAt } → 신버전: { name, file, count, evolved, firstCaughtAt }
+    const isLegacy = pets.length > 0 && !('count' in pets[0]);
 
-    const changed = JSON.stringify(migrated) !== JSON.stringify(pets);
-    if (changed) chrome.storage.local.set({ pets: migrated });
+    let migrated = pets;
 
-    const finalPets = changed ? migrated : pets;
+    if (isLegacy) {
+      // 중복 제거 후 신규 포맷 변환
+      const seen = new Set();
+      migrated = pets
+        .filter(p => {
+          const name = NAME_ALIASES[p.name] ?? p.name;
+          if (RETIRED_PETS.has(name) || seen.has(name)) return false;
+          seen.add(name);
+          return true;
+        })
+        .map(p => {
+          const name = NAME_ALIASES[p.name] ?? p.name;
+          return { name, file: `${name}.svg`, count: 1, evolved: false, firstCaughtAt: p.caughtAt ?? Date.now() };
+        });
+      chrome.storage.local.set({ pets: migrated });
+    } else {
+      // 퇴역 펫 + 별칭 정리
+      const cleaned = migrated
+        .filter(p => !RETIRED_PETS.has(p.name))
+        .map(p => NAME_ALIASES[p.name]
+          ? { ...p, name: NAME_ALIASES[p.name], file: p.evolved ? `${NAME_ALIASES[p.name]}_v2.svg` : `${NAME_ALIASES[p.name]}.svg` }
+          : p
+        );
+      if (JSON.stringify(cleaned) !== JSON.stringify(migrated)) {
+        chrome.storage.local.set({ pets: cleaned });
+        migrated = cleaned;
+      }
+    }
+
     chrome.storage.local.get({ houseVisible: false }, ({ houseVisible }) => {
-      if (houseVisible) createHouse(getUniquePets(finalPets));
+      if (houseVisible) createHouse(migrated);
     });
   });
 

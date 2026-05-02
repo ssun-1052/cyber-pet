@@ -162,3 +162,45 @@ html, body {
   color: var(--text);
   text-align: center;
 }
+
+/* ── Evolution ── */
+
+.dex-card.evolved {
+  border-color: rgba(245, 180, 30, 0.35);
+  background: linear-gradient(160deg, #fffdf5 0%, #ffffff 100%);
+}
+
+.dex-card.evolved:hover {
+  box-shadow: 0 4px 16px rgba(245, 180, 30, 0.2);
+}
+
+.dex-card-progress {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  justify-content: center;
+  margin-top: 2px;
+}
+
+.progress-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--border);
+  border: 1px solid rgba(20, 20, 40, 0.12);
+}
+
+.progress-dot.filled {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.dex-evolved-badge {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: #b87800;
+  background: rgba(245, 180, 30, 0.12);
+  border-radius: 100px;
+  padding: 2px 7px;
+}

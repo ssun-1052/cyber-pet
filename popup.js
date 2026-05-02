@@ -11,12 +11,9 @@
     dog:       'Dog',
   };
 
-  function getURL(path) { return chrome.runtime.getURL(path); }
+  const EVOLVE_COUNT = 5;
 
-  function getUniquePets(pets) {
-    const seen = new Set();
-    return pets.filter(p => seen.has(p.name) ? false : (seen.add(p.name), true));
-  }
+  function getURL(path) { return chrome.runtime.getURL(path); }
 
   // ── Dex render ──────────────────────────────────────────────────────────────
 
@@ -26,20 +23,19 @@
     const subtitle = document.getElementById('subtitle');
 
     grid.innerHTML = '';
-    const unique = getUniquePets(pets);
 
-    if (unique.length === 0) {
+    if (pets.length === 0) {
       empty.classList.remove('hidden');
       subtitle.textContent = '포획한 펫 0마리';
       return;
     }
 
     empty.classList.add('hidden');
-    subtitle.textContent = `포획한 펫 ${unique.length}마리`;
+    subtitle.textContent = `포획한 펫 ${pets.length}마리`;
 
-    for (const pet of unique) {
+    for (const pet of pets) {
       const card = document.createElement('div');
-      card.className = 'dex-card';
+      card.className = 'dex-card' + (pet.evolved ? ' evolved' : '');
 
       const img = document.createElement('img');
       img.className = 'dex-card-image';
@@ -50,8 +46,27 @@
       label.className = 'dex-card-name';
       label.textContent = PET_DISPLAY_NAMES[pet.name] ?? pet.name;
 
+      // 포획 진행도
+      const progress = document.createElement('div');
+      progress.className = 'dex-card-progress';
+
+      if (pet.evolved) {
+        const badge = document.createElement('span');
+        badge.className = 'dex-evolved-badge';
+        badge.textContent = '✦ 진화 완료';
+        progress.appendChild(badge);
+      } else {
+        const count = pet.count ?? 1;
+        for (let i = 0; i < EVOLVE_COUNT; i++) {
+          const dot = document.createElement('span');
+          dot.className = 'progress-dot' + (i < count ? ' filled' : '');
+          progress.appendChild(dot);
+        }
+      }
+
       card.appendChild(img);
       card.appendChild(label);
+      card.appendChild(progress);
       grid.appendChild(card);
     }
   }
