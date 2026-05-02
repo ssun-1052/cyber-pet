@@ -4,7 +4,6 @@
   const PET_DISPLAY_NAMES = {
     rabbit:    'Rabbit',
     squirrel:  'Squirrel',
-    UNICORN:   'Unicorn',
     Dolphin:   'Dolphin',
     Donkey:    'Donkey',
     capybara:  'Capybara',

@@ -3,7 +3,7 @@
 
   // ── Constants ───────────────────────────────────────────────────────────────
 
-  const PETS     = ['rabbit', 'squirrel', 'UNICORN', 'Dolphin', 'Donkey', 'capybara', 'crocodile', 'dog'];
+  const PETS     = ['rabbit', 'squirrel', 'Dolphin', 'Donkey', 'capybara', 'crocodile', 'dog'];
   const HABITATS = ['habitat1', 'habitat2', 'habitat3'];
   const HABITAT_LIFETIME_MS = 2000;
   const SPAWN_INTERVAL_MS   = 5000;
@@ -365,8 +365,25 @@
 
   // ── Init ────────────────────────────────────────────────────────────────────
 
-  chrome.storage.local.get({ houseVisible: false, pets: [] }, ({ houseVisible, pets }) => {
-    if (houseVisible) createHouse(getUniquePets(pets));
+  // Migrate legacy name casing and remove retired pets (UNICORN, RABBIT)
+  const RETIRED_PETS = new Set(['UNICORN', 'RABBIT']);
+  const NAME_ALIASES = { RABBIT: 'rabbit' };
+
+  chrome.storage.local.get({ pets: [] }, ({ pets }) => {
+    const migrated = pets
+      .filter(p => !RETIRED_PETS.has(p.name) || NAME_ALIASES[p.name])
+      .map(p => NAME_ALIASES[p.name]
+        ? { ...p, name: NAME_ALIASES[p.name], file: `${NAME_ALIASES[p.name]}.svg` }
+        : p
+      );
+
+    const changed = JSON.stringify(migrated) !== JSON.stringify(pets);
+    if (changed) chrome.storage.local.set({ pets: migrated });
+
+    const finalPets = changed ? migrated : pets;
+    chrome.storage.local.get({ houseVisible: false }, ({ houseVisible }) => {
+      if (houseVisible) createHouse(getUniquePets(finalPets));
+    });
   });
 
   spawnHabitat();

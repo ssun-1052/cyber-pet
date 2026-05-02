@@ -1,47 +1,46 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256" shape-rendering="crispEdges">
-  <rect width="256" height="256" fill="#ffffff"/>
-  <rect x="112" y="24" width="8" height="8" fill="#f0b52e"/>
-  <rect x="144" y="24" width="8" height="8" fill="#f0b52e"/>
-  <rect x="112" y="32" width="16" height="8" fill="#f0b52e"/>
-  <rect x="136" y="32" width="8" height="8" fill="#f0b52e"/>
-  <rect x="144" y="32" width="16" height="8" fill="#f0af2e"/>
-  <rect x="112" y="40" width="40" height="8" fill="#f0b52e"/>
-  <rect x="152" y="40" width="8" height="8" fill="#f0af2e"/>
-  <rect x="104" y="48" width="8" height="8" fill="#f0b52e"/>
-  <rect x="112" y="48" width="8" height="8" fill="#080808"/>
-  <rect x="120" y="48" width="8" height="8" fill="#ffffff"/>
-  <rect x="128" y="48" width="8" height="8" fill="#f0b52e"/>
-  <rect x="136" y="48" width="8" height="8" fill="#080808"/>
-  <rect x="144" y="48" width="8" height="8" fill="#ffffff"/>
-  <rect x="152" y="48" width="8" height="8" fill="#f0af2e"/>
-  <rect x="104" y="56" width="48" height="8" fill="#f0b52e"/>
-  <rect x="152" y="56" width="8" height="8" fill="#f0af2e"/>
-  <rect x="96" y="64" width="56" height="8" fill="#f0b52e"/>
-  <rect x="152" y="64" width="8" height="8" fill="#f0af2e"/>
-  <rect x="96" y="72" width="56" height="8" fill="#f0b52e"/>
-  <rect x="152" y="72" width="8" height="8" fill="#f0af2e"/>
-  <rect x="88" y="80" width="8" height="8" fill="#8a7033"/>
-  <rect x="96" y="80" width="24" height="8" fill="#b08520"/>
-  <rect x="120" y="80" width="32" height="8" fill="#f0b52e"/>
-  <rect x="152" y="80" width="8" height="8" fill="#f0af2e"/>
-  <rect x="80" y="88" width="48" height="8" fill="#8a7033"/>
-  <rect x="128" y="88" width="8" height="8" fill="#b08520"/>
-  <rect x="136" y="88" width="8" height="8" fill="#f0b52e"/>
-  <rect x="144" y="88" width="16" height="8" fill="#f0af2e"/>
-  <rect x="80" y="96" width="16" height="8" fill="#8a7033"/>
-  <rect x="96" y="96" width="8" height="8" fill="#080808"/>
-  <rect x="104" y="96" width="8" height="8" fill="#b08520"/>
-  <rect x="112" y="96" width="8" height="8" fill="#080808"/>
-  <rect x="120" y="96" width="16" height="8" fill="#8a7033"/>
-  <rect x="136" y="96" width="16" height="8" fill="#f0af2e"/>
-  <rect x="88" y="104" width="40" height="8" fill="#8a7033"/>
-  <rect x="128" y="104" width="40" height="8" fill="#f0af2e"/>
-  <rect x="104" y="112" width="8" height="8" fill="#f0af2e"/>
-  <rect x="120" y="112" width="48" height="8" fill="#f0af2e"/>
-  <rect x="104" y="120" width="56" height="8" fill="#f0af2e"/>
-  <rect x="120" y="128" width="32" height="8" fill="#f0af2e"/>
-  <rect x="120" y="136" width="8" height="8" fill="#f0af2e"/>
-  <rect x="144" y="136" width="8" height="8" fill="#f0af2e"/>
-  <rect x="120" y="144" width="8" height="8" fill="#f0af2e"/>
-  <rect x="144" y="144" width="8" height="8" fill="#f0af2e"/>
+<svg width="256" height="256" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M120 24H112V32H120V24Z" fill="#F0B52E"/>
+<path d="M152 24H144V32H152V24Z" fill="#F0B52E"/>
+<path d="M128 32H112V40H128V32Z" fill="#F0B52E"/>
+<path d="M144 32H136V40H144V32Z" fill="#F0B52E"/>
+<path d="M160 32H144V40H160V32Z" fill="#F0AF2E"/>
+<path d="M152 40H112V48H152V40Z" fill="#F0B52E"/>
+<path d="M160 40H152V48H160V40Z" fill="#F0AF2E"/>
+<path d="M112 48H104V56H112V48Z" fill="#F0B52E"/>
+<path d="M120 48H112V56H120V48Z" fill="#080808"/>
+<path d="M128 48H120V56H128V48Z" fill="white"/>
+<path d="M136 48H128V56H136V48Z" fill="#F0B52E"/>
+<path d="M144 48H136V56H144V48Z" fill="#080808"/>
+<path d="M152 48H144V56H152V48Z" fill="white"/>
+<path d="M160 48H152V56H160V48Z" fill="#F0AF2E"/>
+<path d="M152 56H104V64H152V56Z" fill="#F0B52E"/>
+<path d="M160 56H152V64H160V56Z" fill="#F0AF2E"/>
+<path d="M152 64H96V72H152V64Z" fill="#F0B52E"/>
+<path d="M160 64H152V72H160V64Z" fill="#F0AF2E"/>
+<path d="M152 72H96V80H152V72Z" fill="#F0B52E"/>
+<path d="M160 72H152V80H160V72Z" fill="#F0AF2E"/>
+<path d="M96 80H88V88H96V80Z" fill="#8A7033"/>
+<path d="M120 80H96V88H120V80Z" fill="#B08520"/>
+<path d="M152 80H120V88H152V80Z" fill="#F0B52E"/>
+<path d="M160 80H152V88H160V80Z" fill="#F0AF2E"/>
+<path d="M128 88H80V96H128V88Z" fill="#8A7033"/>
+<path d="M136 88H128V96H136V88Z" fill="#B08520"/>
+<path d="M144 88H136V96H144V88Z" fill="#F0B52E"/>
+<path d="M160 88H144V96H160V88Z" fill="#F0AF2E"/>
+<path d="M96 96H80V104H96V96Z" fill="#8A7033"/>
+<path d="M104 96H96V104H104V96Z" fill="#080808"/>
+<path d="M112 96H104V104H112V96Z" fill="#B08520"/>
+<path d="M120 96H112V104H120V96Z" fill="#080808"/>
+<path d="M136 96H120V104H136V96Z" fill="#8A7033"/>
+<path d="M152 96H136V104H152V96Z" fill="#F0AF2E"/>
+<path d="M128 104H88V112H128V104Z" fill="#8A7033"/>
+<path d="M168 104H128V112H168V104Z" fill="#F0AF2E"/>
+<path d="M112 112H104V120H112V112Z" fill="#F0AF2E"/>
+<path d="M168 112H120V120H168V112Z" fill="#F0AF2E"/>
+<path d="M160 120H104V128H160V120Z" fill="#F0AF2E"/>
+<path d="M152 128H120V136H152V128Z" fill="#F0AF2E"/>
+<path d="M128 136H120V144H128V136Z" fill="#F0AF2E"/>
+<path d="M152 136H144V144H152V136Z" fill="#F0AF2E"/>
+<path d="M128 144H120V152H128V144Z" fill="#F0AF2E"/>
+<path d="M152 144H144V152H152V144Z" fill="#F0AF2E"/>
 </svg>

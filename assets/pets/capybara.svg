@@ -1,38 +1,37 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256" shape-rendering="crispEdges">
-  <rect width="256" height="256" fill="#ffffff"/>
-  <rect x="152" y="32" width="32" height="8" fill="#f0af2e"/>
-  <rect x="152" y="40" width="32" height="8" fill="#f0af2e"/>
-  <rect x="152" y="48" width="32" height="8" fill="#f0af2e"/>
-  <rect x="80" y="56" width="104" height="8" fill="#f0af2e"/>
-  <rect x="72" y="64" width="24" height="8" fill="#b38325"/>
-  <rect x="96" y="64" width="80" height="8" fill="#f0af2e"/>
-  <rect x="64" y="72" width="40" height="8" fill="#b38325"/>
-  <rect x="104" y="72" width="40" height="8" fill="#f0af2e"/>
-  <rect x="144" y="72" width="16" height="8" fill="#423a29"/>
-  <rect x="160" y="72" width="16" height="8" fill="#f0af2e"/>
-  <rect x="64" y="80" width="8" height="8" fill="#b38325"/>
-  <rect x="72" y="80" width="8" height="8" fill="#423a29"/>
-  <rect x="80" y="80" width="8" height="8" fill="#b38325"/>
-  <rect x="88" y="80" width="8" height="8" fill="#423a29"/>
-  <rect x="96" y="80" width="8" height="8" fill="#b38325"/>
-  <rect x="104" y="80" width="72" height="8" fill="#f0af2e"/>
-  <rect x="64" y="88" width="16" height="8" fill="#b38325"/>
-  <rect x="80" y="88" width="8" height="8" fill="#423a29"/>
-  <rect x="88" y="88" width="16" height="8" fill="#b38325"/>
-  <rect x="104" y="88" width="72" height="8" fill="#f0af2e"/>
-  <rect x="64" y="96" width="16" height="8" fill="#b38325"/>
-  <rect x="80" y="96" width="8" height="8" fill="#423a29"/>
-  <rect x="88" y="96" width="16" height="8" fill="#b38325"/>
-  <rect x="104" y="96" width="72" height="8" fill="#f0af2e"/>
-  <rect x="64" y="104" width="16" height="8" fill="#b38325"/>
-  <rect x="80" y="104" width="8" height="8" fill="#423a29"/>
-  <rect x="88" y="104" width="16" height="8" fill="#b38325"/>
-  <rect x="104" y="104" width="72" height="8" fill="#f0af2e"/>
-  <rect x="72" y="112" width="24" height="8" fill="#b38325"/>
-  <rect x="96" y="112" width="72" height="8" fill="#f0af2e"/>
-  <rect x="128" y="120" width="40" height="8" fill="#f0af2e"/>
-  <rect x="120" y="128" width="48" height="8" fill="#f0af2e"/>
-  <rect x="128" y="136" width="40" height="8" fill="#f0af2e"/>
-  <rect x="128" y="144" width="40" height="8" fill="#f0af2e"/>
-  <rect x="112" y="152" width="56" height="8" fill="#f0af2e"/>
+<svg width="256" height="256" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M184 32H152V40H184V32Z" fill="#F0AF2E"/>
+<path d="M184 40H152V48H184V40Z" fill="#F0AF2E"/>
+<path d="M184 48H152V56H184V48Z" fill="#F0AF2E"/>
+<path d="M184 56H80V64H184V56Z" fill="#F0AF2E"/>
+<path d="M96 64H72V72H96V64Z" fill="#B38325"/>
+<path d="M176 64H96V72H176V64Z" fill="#F0AF2E"/>
+<path d="M104 72H64V80H104V72Z" fill="#B38325"/>
+<path d="M144 72H104V80H144V72Z" fill="#F0AF2E"/>
+<path d="M160 72H144V80H160V72Z" fill="#423A29"/>
+<path d="M176 72H160V80H176V72Z" fill="#F0AF2E"/>
+<path d="M72 80H64V88H72V80Z" fill="#B38325"/>
+<path d="M80 80H72V88H80V80Z" fill="#423A29"/>
+<path d="M88 80H80V88H88V80Z" fill="#B38325"/>
+<path d="M96 80H88V88H96V80Z" fill="#423A29"/>
+<path d="M104 80H96V88H104V80Z" fill="#B38325"/>
+<path d="M176 80H104V88H176V80Z" fill="#F0AF2E"/>
+<path d="M80 88H64V96H80V88Z" fill="#B38325"/>
+<path d="M88 88H80V96H88V88Z" fill="#423A29"/>
+<path d="M104 88H88V96H104V88Z" fill="#B38325"/>
+<path d="M176 88H104V96H176V88Z" fill="#F0AF2E"/>
+<path d="M80 96H64V104H80V96Z" fill="#B38325"/>
+<path d="M88 96H80V104H88V96Z" fill="#423A29"/>
+<path d="M104 96H88V104H104V96Z" fill="#B38325"/>
+<path d="M176 96H104V104H176V96Z" fill="#F0AF2E"/>
+<path d="M80 104H64V112H80V104Z" fill="#B38325"/>
+<path d="M88 104H80V112H88V104Z" fill="#423A29"/>
+<path d="M104 104H88V112H104V104Z" fill="#B38325"/>
+<path d="M176 104H104V112H176V104Z" fill="#F0AF2E"/>
+<path d="M96 112H72V120H96V112Z" fill="#B38325"/>
+<path d="M168 112H96V120H168V112Z" fill="#F0AF2E"/>
+<path d="M168 120H128V128H168V120Z" fill="#F0AF2E"/>
+<path d="M168 128H120V136H168V128Z" fill="#F0AF2E"/>
+<path d="M168 136H128V144H168V136Z" fill="#F0AF2E"/>
+<path d="M168 144H128V152H168V144Z" fill="#F0AF2E"/>
+<path d="M168 152H112V160H168V152Z" fill="#F0AF2E"/>
 </svg>
