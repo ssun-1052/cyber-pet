@@ -19,7 +19,8 @@
     {
       "resources": [
         "assets/pets/*.svg",
-        "assets/habitats/*.svg"
+        "assets/habitats/*.svg",
+        "assets/background/*.svg"
       ],
       "matches": ["<all_urls>"]
     }

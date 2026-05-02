@@ -10,10 +10,10 @@
   const HABITAT_SIZE = 120;
   const MARGIN = 20;
 
-  const HOUSE_W        = 200;
-  const HOUSE_H        = 150;
-  const HOUSE_HEADER_H = 24;
-  const PET_SIZE       = 36;
+  const HOUSE_W        = 300;
+  const HOUSE_H        = 250;
+  const HOUSE_HEADER_H = 28;
+  const PET_SIZE       = 81;
   const BASE_SPEED     = 0.038; // px per ms
 
   // ── Shared state ────────────────────────────────────────────────────────────
@@ -153,7 +153,7 @@
     houseEl = document.createElement('div');
     houseEl.id = 'cyber-pet-house';
 
-    // Header bar
+    // Header bar (drag handle)
     const header = document.createElement('div');
     header.id = 'cyber-pet-house-header';
 
@@ -184,11 +184,63 @@
     hint.textContent = '펫을 포획해보세요';
     arena.appendChild(hint);
 
+    // Background image
+    houseEl.style.backgroundImage = `url(${getURL('assets/background/bg-1.svg')})`;
+
     document.documentElement.appendChild(houseEl);
+
+    // Restore saved position, then apply drag
+    chrome.storage.local.get({ houseX: 20, houseY: 20 }, ({ houseX, houseY }) => {
+      houseEl.style.left = houseX + 'px';
+      houseEl.style.top  = houseY + 'px';
+    });
+    applyDrag(houseEl, header);
 
     housePets = [];
     addPetsToHouse(uniquePets);
     startHouseAnimation();
+  }
+
+  function applyDrag(el, handle) {
+    let startX, startY, startLeft, startTop;
+
+    handle.addEventListener('mousedown', (e) => {
+      // Ignore clicks on the close button
+      if (e.target.id === 'cyber-pet-house-close') return;
+
+      e.preventDefault();
+      startX    = e.clientX;
+      startY    = e.clientY;
+      startLeft = parseInt(el.style.left, 10) || 20;
+      startTop  = parseInt(el.style.top,  10) || 20;
+
+      el.style.transition = 'none';
+
+      function onMove(e) {
+        const dx = e.clientX - startX;
+        const dy = e.clientY - startY;
+
+        const newLeft = Math.max(0, Math.min(window.innerWidth  - HOUSE_W, startLeft + dx));
+        const newTop  = Math.max(0, Math.min(window.innerHeight - HOUSE_H, startTop  + dy));
+
+        el.style.left = newLeft + 'px';
+        el.style.top  = newTop  + 'px';
+      }
+
+      function onUp(e) {
+        document.removeEventListener('mousemove', onMove);
+        document.removeEventListener('mouseup',   onUp);
+
+        const finalLeft = parseInt(el.style.left, 10);
+        const finalTop  = parseInt(el.style.top,  10);
+        if (isContextAlive()) {
+          chrome.storage.local.set({ houseX: finalLeft, houseY: finalTop });
+        }
+      }
+
+      document.addEventListener('mousemove', onMove);
+      document.addEventListener('mouseup',   onUp);
+    });
   }
 
   function destroyHouse() {
